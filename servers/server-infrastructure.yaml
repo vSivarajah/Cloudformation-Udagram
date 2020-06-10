@@ -1,0 +1,98 @@
+  Description:
+    This yaml file represents a cloudformation template that contains the underlying server infrastructure that hosts the web app.
+    This will contain a load balancer, auto scaling group with launch configuration, iam roles to access s3 content. 
+
+
+  Parameters:
+    EnvironmentName:
+      Description: Udagram project 2020
+      Type: String
+
+  Resources:
+
+    IAMRoleS3Access:
+      Type: AWS::IAM::Role
+      Properties:
+        Path: "/"
+        ManagedPolicyArns:
+          - "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+        AssumeRolePolicyDocument:
+          Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+              - ec2.amazonaws.com
+            Action:
+            - sts:AssumeRole
+    LBSecurityGroup:
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupDescription: Allow everything through port 80 to load balancer
+        VpcId:
+          Fn::ImportValue: 
+            !Sub "${EnvironmentName}-VPCID"
+        SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+    WebAppSecurityGroup:
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupDescription: Allow everything through port 80 to load balancer
+        VpcId:
+          Fn::ImportValue: 
+            !Sub "${EnvironmentName}-VPCID"
+        SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: 0.0.0.0/0
+
+    WebAppTargetGroup:
+      Type: AWS::ElasticLoadBalancingV2::TargetGroup
+      Properties:
+        Port: 80
+        Protocol: HTTP
+        VpcId: 
+          Fn::ImportValue: 
+            !Sub "${EnvironmentName}-VPCID"
+
+
+    WebAppLaunchConfiguration:
+      Type: AWS::AutoScaling::LaunchConfiguration
+      Properties:
+        UserData:
+          Fn::Base64: !Sub |
+            #!/bin/bash
+            apt-get update -y
+            apt-get install unzip awscli -y
+            apt-get install apache2 -y
+            systemctl start apache2.service
+            cd /var/www/html
+        ImageId: ami-003634241a8fcdec0
+        SecurityGroups:
+        - Ref: WebAppSecurityGroup
+        InstanceType: t2.micro
+        BlockDeviceMappings:
+        - DeviceName: "/dev/sdk"
+          Ebs:
+            VolumeSize: '10'
+  
+
+    #WebAppAutoScalerGroup:
+    #WebAppLoadBalancer:
+    #WebAppLoadBalancerListener:
+    #WebAppLoadBalancerListenerRule:
+    
