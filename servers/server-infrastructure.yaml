@@ -100,7 +100,21 @@
         - DeviceName: "/dev/sdk"
           Ebs:
             VolumeSize: '10'
-  
+
+    WebAppAutoScalerGroup:
+      Type: AWS::AutoScaling::AutoScalingGroup
+      Properties:
+        AutoScalingGroupName: webapp-asg
+        MinSize: "1"
+        MaxSize: "2"
+        DesiredCapacity: "2"
+        HealthCheckGracePeriod: 300
+        LaunchConfigurationName: !Ref WebAppLaunchConfiguration
+        VPCZoneIdentifier:
+        - Fn::ImportValue: 
+            !Sub "${EnvironmentName}-PRIV-NETS"         
+        TargetGroupARNs:
+        - Ref: WebAppTargetGroup
 
     #WebAppAutoScalerGroup:
     #WebAppLoadBalancer:
