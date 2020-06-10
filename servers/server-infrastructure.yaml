@@ -10,6 +10,7 @@
 
   Resources:
 
+
     IAMRoleS3Access:
       Type: AWS::IAM::Role
       Properties:
@@ -24,6 +25,15 @@
               - ec2.amazonaws.com
             Action:
             - sts:AssumeRole
+
+    S3InstanceProfile: 
+      Type: "AWS::IAM::InstanceProfile"
+      Properties: 
+        Path: "/"
+        Roles: 
+          - Ref: "IAMRoleS3Access"
+
+
     LBSecurityGroup:
       Type: AWS::EC2::SecurityGroup
       Properties:
@@ -82,6 +92,7 @@
             systemctl start apache2.service
             cd /var/www/html
         ImageId: ami-003634241a8fcdec0
+        IamInstanceProfile: !Ref S3InstanceProfile
         SecurityGroups:
         - Ref: WebAppSecurityGroup
         InstanceType: t2.micro
