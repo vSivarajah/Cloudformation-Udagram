@@ -116,7 +116,15 @@
         TargetGroupARNs:
         - Ref: WebAppTargetGroup
 
-    #WebAppAutoScalerGroup:
+    WebAppLoadBalancer:
+      Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+      Properties:
+        Subnets:
+        - Fn::ImportValue: !Sub "${EnvironmentName}-PUB-SN-1"
+        - Fn::ImportValue: !Sub "${EnvironmentName}-PUB-SN-2"
+        SecurityGroups:
+        - Ref: LBSecurityGroup
+      
     #WebAppLoadBalancer:
     #WebAppLoadBalancerListener:
     #WebAppLoadBalancerListenerRule:
