@@ -12,6 +12,12 @@
       Description: Instancetype we use for our LaunchConfiguration. 
       Type: String
 
+    
+    S3BucketName:
+      Description: The name of the s3 bucket from which you want to access the index.html
+      Type: String
+      Default: udagram-vignesh-2020
+
   Resources:
 
     IAMRoleS3Access:
@@ -94,7 +100,7 @@
             apt-get install apache2 -y
             systemctl start apache2.service
             cd /var/www/html
-            aws s3 cp s3://udagram-vignesh-2020/frontend.zip .
+            aws s3 cp s3://${S3BucketName}/frontend.zip .
             unzip -o frontend.zip 
             cd /var/www/html/frontend
             mv -f index.html ../
