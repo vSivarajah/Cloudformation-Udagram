@@ -1,4 +1,8 @@
 # Cloudformation-Udagram
+
+#### URL for a working example. 
+http://serve-webap-12srdabswiwqi-1913077059.us-west-2.elb.amazonaws.com/
+
 This project describes the process of provisioning an AWS cloud infrastructure using cloudformation. 
 We will be deploying a simple web application hosted on EC2 instances that are deployed on private subnets which in turn are being access through a load balancer in the public subnet. As mentioned, the whole infrastructure is automated using cloudformation templates. 
 
