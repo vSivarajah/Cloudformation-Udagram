@@ -2,5 +2,10 @@
     {
         "ParameterKey": "EnvironmentName",
         "ParameterValue": "UdagramProject"
+    },
+
+    {
+        "ParameterKey": "InstanceVMType",
+        "ParameterValue": "t2.medium"
     }
 ]
